@@ -82,6 +82,7 @@ unsigned long TntTime[10]; //TNT爆炸时间计算
 unsigned long MMTime; //怪物移动冷却
 unsigned long PIT; //玩家无敌时间
 byte TNTS; //TNT动态效果
+bool PWIN;
 #define BOOMTime 3000 //TNT爆炸需要等待的时间
 #define MMTimeOut 100 //怪物移动冷却时间
 #define Invincible_Time 5000 //无敌时间
@@ -98,8 +99,8 @@ void setup() {
   randomSeed(analogRead(A0));
   MENU();
   LEVEL = 1;
-  BuildMap();
   ShowLevel();
+  BuildMap();
 }
 /*=========================================================
                      不停循环
@@ -143,8 +144,10 @@ void BuildMap() {
   LIFE = 3; //开局3条命
   byte MN = 0; //重置怪物计数器
   PP = 2; //设置玩家方向头朝下
-  for (byte n = 0; n < 10; n++) TntTime[n] = 0;  //防止TNT在下一关爆炸
-  PIT = millis();
+  for (byte n = 0; n < 10; n++) {
+    TntTime[n] = 0;  //防止TNT在下一关爆炸
+    MLRUD[n] = 255;
+  }
   for (byte y = 0; y < 15; y++) {
     for (byte x = 0; x < 31; x++) {
       if (y == 0 || y == 14) {
@@ -177,6 +180,7 @@ void BuildMap() {
   }
   PX = 15;
   PY = 7;
+  PIT = millis();
 }
 /*====================================================================
                              绘图
@@ -283,11 +287,11 @@ void logic() {
   */
   if (LIFE > 0) {
     if (millis() >= MMTime + MMTimeOut) {
-      bool PWIN = true;
+
       MMTime = millis();
       for (byte n = 0; n < 10; n++) {
         if (MLRUD[n] != 255) {
-          PWIN = false;
+
           SBDP(MLRUD[n], monster[n][0], monster[n][1]); //通过怪物方向 坐标调用障碍物判断函数
           if (BMove == true) {
             //移动合法
@@ -306,10 +310,18 @@ void logic() {
                 break;
             }
           } else MLRUD[n] = random(0, 4);
-        } else if (PWIN == true) WIN();
+        }
       }
     }
   }
+  /*
+     判断是否通关
+  */
+  PWIN = true;
+  for (byte n = 0; n < 10; n++) {
+    if (MLRUD[n] != 255) PWIN = false;
+  }
+  if (PWIN == true) WIN();
   /*
      遍历地图 刷新数据
   */
@@ -439,8 +451,8 @@ void WIN() {
     while (1) {}
   } else {
     LEVEL++;   //关卡+1
-    BuildMap();  //构建地图
     ShowLevel(); //显示第几关
+    BuildMap();  //构建地图
   }
 }
 /*=========================================================
