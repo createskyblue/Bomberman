@@ -143,6 +143,8 @@ void BuildMap() {
   LIFE = 3; //开局3条命
   byte MN = 0; //重置怪物计数器
   PP = 2; //设置玩家方向头朝下
+  for (byte n = 0; n < 10; n++) TntTime[n] = 0;  //防止TNT在下一关爆炸
+  PIT = millis();
   for (byte y = 0; y < 15; y++) {
     for (byte x = 0; x < 31; x++) {
       if (y == 0 || y == 14) {
@@ -280,8 +282,8 @@ void logic() {
      怪物AI
   */
   if (LIFE > 0) {
-    bool PWIN = true;
     if (millis() >= MMTime + MMTimeOut) {
+      bool PWIN = true;
       MMTime = millis();
       for (byte n = 0; n < 10; n++) {
         if (MLRUD[n] != 255) {
