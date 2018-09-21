@@ -337,7 +337,7 @@ void logic() {
         MLRUD[i] = 255; //设置怪物已经死亡
       }
       if (millis() >= PIT + Invincible_Time) { //玩家不在无敌状态
-        if (PX == monster[i][0] && PY == monster[i][1] || MAP[PX][PY] >= 4) { //怪物伤害 或者 TNT伤害
+        if (PX == monster[i][0] && PY == monster[i][1] && MLRUD[i] != 255 || MAP[PX][PY] >= 4) { //怪物伤害 或者 TNT伤害
           LIFE--;
           PIT = millis();
         }
